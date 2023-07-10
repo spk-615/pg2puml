@@ -6,7 +6,7 @@ $$
 select concat(
   '@startuml',
   E'\n',
-  skinparam linetype ortho -- orthogonal connection lines
+  'skinparam linetype ortho', -- orthogonal connection lines
   E'\n',
   (select string_agg(entity.def, E'\n\n')
      from (select concat_ws(E'\n',
