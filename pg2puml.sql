@@ -22,7 +22,7 @@ select concat(
                                 filter (where 'PRIMARY KEY' = any(cons.keys)),
                             '--',
                             string_agg (concat_ws (' ',
-                                                   case when col.is_nullable::boolean then ''
+                                                   case when col.is_nullable::boolean then ' '
                                                         else '*'
                                                     end, 
                                                    col.column_name, ': ' || col.data_type,
@@ -62,16 +62,14 @@ select concat(
   ),
   E'\n\n',
   (select string_agg(concat(fk.key_schema, '.', fk.key_table,
-                             ' ',
                              case when key_unique
-                                  then '|o'
-                                  else '}o'
+                                  then ' |o'
+                                  else ' }o'
                               end, 
                              case when key_not_null
-                                  then '--||'
-                                  else '..o|'
+                                  then '--|| '
+                                  else '..o| '
                               end,
-                             ' ',
                              fk.ref_schema, '.', fk.ref_table),
                       E'\n')
                              
