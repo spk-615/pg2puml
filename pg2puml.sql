@@ -37,6 +37,10 @@ select concat(
                             E'}\n'
                            )
              from information_schema.columns col
+             join information_schema.tables tab
+               on tab.table_schema = col.table_schema
+              and tab.table_name = col.table_name
+              and tab.table_type = 'BASE TABLE'
              left join lateral (select array_agg(constraint_type::text)
                                   from information_schema.table_constraints tco
                                   join information_schema.key_column_usage ccu using (constraint_schema, table_name, constraint_name)
