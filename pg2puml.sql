@@ -1,6 +1,6 @@
 create or replace function pg2puml(
-  in keytabs text[] default '{}'::text[],
- out puml text
+  variadic keytabs text[] default '{}'::text[],
+       out puml text
 ) returns text as
 $$
 select concat(
