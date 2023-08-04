@@ -95,46 +95,46 @@ select concat(
                    ref_.table_name as ref_table,
                    ref_.columns
               from information_schema.table_constraints tco
-              left join lateral (select kcu.constraint_name,
-                                        kco.table_schema,
-                                        kco.table_name,
-                                        array_agg(kco.column_name::text),
-                                        bool_and(not (is_nullable::boolean))
-                                   from information_schema.key_column_usage kcu
-                                   join information_schema.columns kco
-                                     on kco.table_schema = kcu.table_schema
-                                    and kco.table_name = kcu.table_name
-                                    and kco.column_name = kcu.column_name
-                                  group by constraint_name,
-                                           kco.table_schema,
-                                           kco.table_name) key_(constraint_name,
-                                                                table_schema,
-                                                                table_name,
-                                                                columns,
-                                                                not_null)
+              join (select kcu.constraint_name,
+                           kco.table_schema,
+                           kco.table_name,
+                           array_agg(kco.column_name::text),
+                           bool_and(not (is_nullable::boolean))
+                      from information_schema.key_column_usage kcu
+                      join information_schema.columns kco
+                        on kco.table_schema = kcu.table_schema
+                       and kco.table_name = kcu.table_name
+                       and kco.column_name = kcu.column_name
+                     group by constraint_name,
+                              kco.table_schema,
+                              kco.table_name) key_(constraint_name,
+                                                   table_schema,
+                                                   table_name,
+                                                   columns,
+                                                   not_null)
                 on key_.table_schema = tco.constraint_schema
                and key_.constraint_name = tco.constraint_name
           
-              left join lateral (select ccu.constraint_schema,
-                                        ccu.constraint_name,
-                                        cco.table_schema,
-                                        cco.table_name,
-                                        array_agg(cco.column_name::text),
-                                        bool_and(not (is_nullable::boolean))
-                                   from information_schema.constraint_column_usage ccu
-                                   join information_schema.columns cco
-                                     on cco.table_schema = ccu.table_schema
-                                    and cco.table_name = ccu.table_name
-                                    and cco.column_name = ccu.column_name
-                                  group by ccu.constraint_schema,
-                                           ccu.constraint_name,
-                                           cco.table_schema,
-                                           cco.table_name) ref_(constraint_schema,
-                                                                constraint_name,
-                                                                table_schema,
-                                                                table_name,
-                                                                columns,
-                                                                not_null)
+              join (select ccu.constraint_schema,
+                           ccu.constraint_name,
+                           cco.table_schema,
+                           cco.table_name,
+                           array_agg(cco.column_name::text),
+                           bool_and(not (is_nullable::boolean))
+                      from information_schema.constraint_column_usage ccu
+                      join information_schema.columns cco
+                        on cco.table_schema = ccu.table_schema
+                       and cco.table_name = ccu.table_name
+                       and cco.column_name = ccu.column_name
+                     group by ccu.constraint_schema,
+                              ccu.constraint_name,
+                              cco.table_schema,
+                              cco.table_name) ref_(constraint_schema,
+                                                   constraint_name,
+                                                   table_schema,
+                                                   table_name,
+                                                   columns,
+                                                   not_null)
                 on ref_.constraint_schema = tco.constraint_schema
                and ref_.constraint_name = tco.constraint_name
              where constraint_type = 'FOREIGN KEY'
